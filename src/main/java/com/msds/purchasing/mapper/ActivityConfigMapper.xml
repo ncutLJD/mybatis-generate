@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.msds.purchasing.mapper.ActivityConfigMapper">
+	<!-- Result Map -->
+	<resultMap id="ResultMap" type="com.msds.purchasing.entity.ActivityConfigEntity">
+		<result column="id" property="id" />
+		<result column="largePropValue" property="largePropValue" />
+		<result column="propName" property="propName" />
+		<result column="propValue" property="propValue" />
+		<result column="version" property="version" />
+		<result column="activity_id" property="activityId" />
+	</resultMap>
+	<!-- activity_config table all fields -->
+	<sql id="baseColumnList">
+		id,largePropValue,propName,propValue,version,activity_id
+	</sql>
+	<!-- 查询条件 -->
+	<sql id="baseWhereClause">
+		where 1=1
+		<trim suffixOverrides=",">
+			<if test="id != null and id != ''">
+				and id=#{id}
+			</if>
+			<if test="largePropValue != null">
+				and largePropValue=#{largePropValue}
+			</if>
+			<if test="propName != null and propName != ''">
+				and propName=#{propName}
+			</if>
+			<if test="propValue != null and propValue != ''">
+				and propValue=#{propValue}
+			</if>
+			<if test="version != null">
+				and version=#{version}
+			</if>
+			<if test="activityId != null and activityId != ''">
+				and activity_id=#{activityId}
+			</if>
+		</trim>
+	</sql>
+    <!-- 根据实体类字段是否赋值，选择性的更新数据库字段 -->
+	<sql id="selectiveSetClause">
+		<trim suffixOverrides=",">
+			<if test="id != null and id != ''">
+			      id=#{id},
+			</if>
+			<if test="largePropValue != null">
+			      largePropValue=#{largePropValue},
+			</if>
+			<if test="propName != null and propName != ''">
+			      propName=#{propName},
+			</if>
+			<if test="propValue != null and propValue != ''">
+			      propValue=#{propValue},
+			</if>
+			<if test="version != null">
+			      version=#{version},
+			</if>
+			<if test="activityId != null and activityId != ''">
+			      activity_id=#{activityId},
+			</if>
+		</trim>
+	</sql>
+	<!-- 插入记录 -->
+	<insert id="save" parameterType="Object">
+
+		<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+
+		insert into
+		activity_config(id,largePropValue,propName,propValue,version,activity_id)
+		values(#{id},#{largePropValue},#{propName},#{propValue},0,#{activityId})
+	</insert>
+	<!-- 根据id，修改记录 -->
+	<update id="update" parameterType="Object">
+		update activity_config set
+		largePropValue=#{largePropValue},propName=#{propName},propValue=#{propValue},version=version+1,activity_id=#{activityId}
+		where id=#{id}
+	</update>
+	<!-- 修改记录，只修改只不为空的字段 -->
+	<update id="updateBySelective" parameterType="Object">
+		update activity_config set
+		<include refid="selectiveSetClause" />
+		where id=#{id}
+	</update>
+	<!-- 删除记录 -->
+	<delete id="delete" parameterType="Object">
+		delete from activity_config where
+		id=#{id}
+	</delete>
+	<!-- 根据id查询 -->
+	<select id="findById" resultMap="ResultMap" parameterType="Object">
+		select
+		<include refid="baseColumnList" />
+		from activity_config where id=#{id}
+	</select>
+	<!-- 列表总数 -->
+	<select id="count" resultType="java.lang.Long" parameterType="Object">
+		select count(1) from activity_config
+		<include refid="baseWhereClause" />
+	</select>
+	<!-- 查询列表 -->
+	<select id="findList" resultMap="ResultMap" parameterType="Object">
+		select
+		<include refid="baseColumnList" />
+		from activity_config
+		<include refid="baseWhereClause" />
+	</select>
+	<!-- 以上为工具自动生成 -->
+
+	<!-- 查询分页列表 -->
+	<select id="findPage" resultMap="ResultMap" parameterType="Object">
+		select
+		<include refid="baseColumnList" />
+		from activity_config
+		<include refid="baseWhereClause" />
+		<if test="orderProperty != null and orderProperty != ''">
+			order by ${orderProperty}
+			<if test="orderDirection != null and orderDirection != ''">
+				${orderDirection}
+			</if>
+		</if>
+		ORDER BY createTime DESC
+		<if test="pageSize != 0">
+			limit ${firstNumber},${pageSize}
+		</if>
+	</select>
+
+</mapper>
